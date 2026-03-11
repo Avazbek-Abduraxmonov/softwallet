@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Soft Wallet | Tarix</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Cormorant+Garamond:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent
+    }
+
+    :root {
+      --bg: #080b12;
+      --bg2: #0d1017;
+      --bg3: #131720;
+      --card: #0f1318;
+      --card2: #161b24;
+      --border: rgba(255, 255, 255, 0.055);
+      --border2: rgba(255, 255, 255, 0.1);
+      --text: #e4e7f2;
+      --text2: #6e7487;
+      --text3: #3d4257;
+      --ton: #0098EA;
+      --ton2: #2db8ff;
+      --ton-dim: rgba(0, 152, 234, 0.13);
+      --green: #18b872;
+      --green-dim: rgba(24, 184, 114, 0.12);
+      --rose: #e8445a;
+      --rose-dim: rgba(232, 68, 90, 0.12);
+      --amber: #e89c28;
+      --sw: 220px;
+    }
+
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text)
+    }
+
+    .app {
+      display: flex;
+      width: 100vw;
+      height: 100dvh;
+      overflow: hidden
+    }
+
+    /* Sidebar, Topbar, Bottom nav (oldingi sahifalar bilan bir xil) */
+    .sidebar {
+      width: var(--sw);
+      flex-shrink: 0;
+      height: 100%;
+      background: var(--bg2);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column
+    }
+
+    .sl-logo {
+      padding: clamp(16px, 2.5vh, 26px) 18px clamp(14px, 2vh, 22px);
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .sl-logo-txt {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(16px, 1.3vw, 19px);
+      font-weight: 600;
+      background: linear-gradient(130deg, #fff 20%, #2db8ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent
+    }
+
+    .sl-nav {
+      flex: 1;
+      padding: clamp(8px, 1.2vh, 14px) 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      overflow-y: auto
+    }
+
+    .sl-nav::-webkit-scrollbar {
+      display: none
+    }
+
+    .si {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: clamp(9px, 1.1vh, 12px) 13px;
+      border-radius: 12px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      width: 100%;
+      text-align: left;
+      font-size: clamp(13px, 1vw, 14px);
+      font-weight: 500;
+      color: var(--text3);
+      text-decoration: none;
+      transition: background .15s
+    }
+
+    .si:hover {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text2)
+    }
+
+    .si.active {
+      background: var(--ton-dim);
+      color: var(--ton2)
+    }
+
+    .si svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.6
+    }
+
+    .sl-foot {
+      padding: clamp(10px, 1.5vh, 16px) 10px clamp(12px, 2vh, 22px);
+      border-top: 1px solid var(--border)
+    }
+
+    .sl-ver {
+      font-size: 11px;
+      color: var(--text3);
+      text-align: center;
+      padding-top: 8px
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden
+    }
+
+    .topbar {
+      height: clamp(48px, 6.5vh, 60px);
+      padding: 0 clamp(16px, 2.5vw, 32px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg)
+    }
+
+    .tb-title {
+      font-size: clamp(14px, 1.2vw, 17px);
+      font-weight: 700
+    }
+
+    .tb-right {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .tb-bal {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--ton-dim);
+      border: 1px solid rgba(0, 152, 234, 0.2);
+      padding: clamp(5px, 0.7vh, 7px) clamp(12px, 1.3vw, 16px);
+      border-radius: 20px
+    }
+
+    .tb-bal-lbl {
+      font-size: clamp(10px, 0.8vw, 11px);
+      color: var(--text3)
+    }
+
+    .tb-bal-amt {
+      font-size: clamp(12px, 1vw, 14px);
+      font-weight: 700;
+      color: var(--ton2)
+    }
+
+    .ibell {
+      width: clamp(32px, 3.5vw, 38px);
+      height: clamp(32px, 3.5vw, 38px);
+      border-radius: 11px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative
+    }
+
+    .ibell svg {
+      width: 16px;
+      height: 16px;
+      stroke: var(--text2)
+    }
+
+    .ndot {
+      position: absolute;
+      top: 7px;
+      right: 7px;
+      width: 6px;
+      height: 6px;
+      background: var(--ton);
+      border-radius: 50%;
+      border: 1.5px solid var(--bg)
+    }
+
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: clamp(14px, 2.2vh, 26px) clamp(14px, 2.2vw, 32px) clamp(80px, 10vh, 100px)
+    }
+
+    .content::-webkit-scrollbar {
+      width: 4px
+    }
+
+    .content::-webkit-scrollbar-thumb {
+      background: var(--border2);
+      border-radius: 4px
+    }
+
+    .mob-hdr {
+      padding: clamp(10px, 1.5vh, 14px) 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: clamp(16px, 2.5vh, 24px)
+    }
+
+    .bnav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: clamp(58px, 8vh, 68px);
+      background: rgba(8, 11, 18, .95);
+      backdrop-filter: blur(24px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 0 4px env(safe-area-inset-bottom, 0px);
+      z-index: 200
+    }
+
+    .ntab {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 4px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      text-decoration: none;
+      color: inherit
+    }
+
+    .ntab svg {
+      width: clamp(19px, 2.8vw, 22px);
+      height: clamp(19px, 2.8vw, 22px);
+      stroke: var(--text3);
+      fill: none
+    }
+
+    .ntab.active svg {
+      stroke: var(--ton)
+    }
+
+    .nt-lbl {
+      font-size: clamp(9px, 1.5vw, 11px);
+      font-weight: 600;
+      color: var(--text3)
+    }
+
+    .ntab.active .nt-lbl {
+      color: var(--ton)
+    }
+
+    .ntab.active::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      width: 18px;
+      height: 2px;
+      background: var(--ton);
+      border-radius: 2px
+    }
+
+    @media(max-width:767px) {
+
+      .sidebar,
+      .topbar {
+        display: none
+      }
+
+      .bnav {
+        display: flex
+      }
+
+      .content {
+        padding-bottom: calc(clamp(58px, 8vh, 68px) + 16px + env(safe-area-inset-bottom, 0px))
+      }
+    }
+
+    @media(min-width:768px) {
+      .sidebar {
+        display: flex
+      }
+
+      .topbar {
+        display: flex
+      }
+
+      .bnav {
+        display: none
+      }
+
+      .mob-hdr {
+        display: none
+      }
+    }
+
+    /* History page styles */
+    .hfilters {
+      display: flex;
+      gap: clamp(6px, 0.8vw, 10px);
+      flex-wrap: wrap;
+      margin-bottom: clamp(12px, 1.8vh, 20px)
+    }
+
+    .hfil {
+      padding: clamp(6px, 0.8vh, 8px) clamp(12px, 1.3vw, 17px);
+      border-radius: 20px;
+      font-size: clamp(11px, 0.9vw, 13px);
+      font-weight: 500;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text2);
+      cursor: pointer;
+      transition: all .15s
+    }
+
+    .hfil.on {
+      background: var(--ton);
+      border-color: var(--ton);
+      color: #fff
+    }
+
+    .hd-lbl {
+      font-size: clamp(9px, 0.78vw, 11px);
+      font-weight: 600;
+      color: var(--text3);
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      padding: clamp(12px, 1.8vh, 18px) clamp(11px, 1.2vw, 15px) clamp(6px, 0.8vh, 9px)
+    }
+
+    .txn {
+      display: flex;
+      align-items: center;
+      gap: clamp(10px, 1.2vw, 14px);
+      padding: clamp(10px, 1.3vh, 14px) clamp(11px, 1.2vw, 15px);
+      border-radius: clamp(11px, 1.2vw, 15px);
+      cursor: pointer;
+      transition: background .14s;
+      margin-bottom: 1px
+    }
+
+    .txn:hover {
+      background: var(--card2)
+    }
+
+    .ti {
+      width: clamp(36px, 4vw, 44px);
+      height: clamp(36px, 4vw, 44px);
+      border-radius: clamp(11px, 1.2vw, 14px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0
+    }
+
+    .ti svg {
+      width: clamp(14px, 1.5vw, 17px);
+      height: clamp(14px, 1.5vw, 17px);
+      stroke-width: 1.6;
+      fill: none
+    }
+
+    .ti.g {
+      background: var(--green-dim)
+    }
+
+    .ti.g svg {
+      stroke: var(--green)
+    }
+
+    .ti.r {
+      background: var(--rose-dim)
+    }
+
+    .ti.r svg {
+      stroke: var(--rose)
+    }
+
+    .ti.b {
+      background: var(--ton-dim)
+    }
+
+    .ti.b svg {
+      stroke: var(--ton2)
+    }
+
+    .txn-info {
+      flex: 1;
+      min-width: 0
+    }
+
+    .txn-nm {
+      font-size: clamp(12px, 1vw, 14px);
+      font-weight: 500;
+      color: var(--text)
+    }
+
+    .txn-dt {
+      font-size: clamp(10px, 0.82vw, 12px);
+      color: var(--text3);
+      margin-top: 2px
+    }
+
+    .txn-amt {
+      font-size: clamp(12px, 1.1vw, 14px);
+      font-weight: 700;
+      text-align: right
+    }
+
+    .txn-sub {
+      font-size: clamp(9px, 0.78vw, 11px);
+      color: var(--text3);
+      text-align: right;
+      margin-top: 1px
+    }
+
+    .pos {
+      color: var(--green)
+    }
+
+    .neg {
+      color: var(--rose)
+    }
+
+    .neu {
+      color: var(--text2)
+    }
+
+    .toast {
+      position: fixed;
+      top: clamp(14px, 2.5vh, 22px);
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: var(--card2);
+      border: 1px solid var(--border2);
+      color: var(--text);
+      padding: clamp(9px, 1.2vh, 12px) clamp(16px, 2vw, 22px);
+      border-radius: 100px;
+      z-index: 9999;
+      transition: transform .3s
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0)
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sl-logo">
+        <svg width="30" height="22" viewBox="0 0 42 30" fill="none">
+          <path d="M21 2L38 10.5V19.5L21 28L4 19.5V10.5L21 2Z" stroke="#0098EA" stroke-width="1.5" />
+          <path d="M21 7L30 13.5L21 23L12 13.5L21 7Z" fill="rgba(0,152,234,0.18)" stroke="#2db8ff" stroke-width="1.2" />
+          <circle cx="21" cy="15" r="2.2" fill="#0098EA" />
+        </svg>
+        <span class="sl-logo-txt">Soft Wallet</span>
+      </div>
+      <nav class="sl-nav">
+        <a href="index.html" class="si"><svg viewBox="0 0 24 24">
+            <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z" />
+            <polyline points="9 21 9 12 15 12 15 21" />
+          </svg>Asosiy</a>
+        <a href="kartalar.html" class="si"><svg viewBox="0 0 24 24">
+            <rect x="2" y="5" width="20" height="14" rx="2" />
+            <line x1="2" y1="10" x2="22" y2="10" />
+            <line x1="6" y1="15" x2="10" y2="15" />
+          </svg>Kartam</a>
+        <a href="xizmatlar.html" class="si"><svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14" />
+          </svg>Xizmatlar</a>
+        <a href="stake.html" class="si"><svg viewBox="0 0 24 24">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+          </svg>Stake</a>
+        <a href="tarix.html" class="si active"><svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>Tarix</a>
+      </nav>
+      <div class="sl-foot">
+        <a href="#" class="si" onclick="toast('⚙️ Tez orada');return false"><svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>Sozlamalar</a>
+        <div class="sl-ver">v1.0 · TON Network</div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main">
+      <header class="topbar">
+        <div class="tb-title">Tarix</div>
+        <div class="tb-right">
+          <div class="tb-bal"><span class="tb-bal-lbl">Balans</span><span class="tb-bal-amt">248.50 TON</span></div>
+          <div class="ibell" onclick="toast('🔔 Bildirishnomalar')">
+            <svg viewBox="0 0 24 24">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+            <div class="ndot"></div>
+          </div>
+        </div>
+      </header>
+
+      <div class="content">
+        <!-- Mobile header -->
+        <div class="mob-hdr">
+          <svg width="36" height="26" viewBox="0 0 42 30" fill="none">
+            <path d="M21 2L38 10.5V19.5L21 28L4 19.5V10.5L21 2Z" stroke="#0098EA" stroke-width="1.5" />
+            <path d="M21 7L30 13.5L21 23L12 13.5L21 7Z" fill="rgba(0,152,234,0.18)" stroke="#2db8ff"
+              stroke-width="1.2" />
+            <circle cx="21" cy="15" r="2.2" fill="#0098EA" />
+          </svg>
+          <div class="ibell" onclick="toast('🔔 Bildirishnomalar')">
+            <svg viewBox="0 0 24 24">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+            <div class="ndot"></div>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="hfilters" id="filters">
+          <div class="hfil on" data-filter="all">Barchasi</div>
+          <div class="hfil" data-filter="in">Kirim</div>
+          <div class="hfil" data-filter="out">Chiqim</div>
+          <div class="hfil" data-filter="tr">Transfer</div>
+        </div>
+
+        <!-- Transactions container -->
+        <div id="txn-container"></div>
+      </div>
+
+      <!-- BOTTOM NAV -->
+      <nav class="bnav">
+        <a href="index.html" class="ntab"><svg viewBox="0 0 24 24">
+            <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z" />
+            <polyline points="9 21 9 12 15 12 15 21" />
+          </svg><span class="nt-lbl">Asosiy</span></a>
+        <a href="kartalar.html" class="ntab"><svg viewBox="0 0 24 24">
+            <rect x="2" y="5" width="20" height="14" rx="2" />
+            <line x1="2" y1="10" x2="22" y2="10" />
+            <line x1="6" y1="15" x2="10" y2="15" />
+          </svg><span class="nt-lbl">Kartam</span></a>
+        <a href="stake.html" class="ntab"><svg viewBox="0 0 24 24">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+          </svg><span class="nt-lbl">Stake</span></a>
+        <a href="tarix.html" class="ntab active"><svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg><span class="nt-lbl">Tarix</span></a>
+      </nav>
+    </div>
+  </div>
+
+  <div class="toast" id="toastEl"></div>
+
+  <script>
+    const S = {
+      tonRate: 6.00,
+      txns: [
+        { t: "in", name: "TON qabul qilindi", date: "Bugun, 09:15", amt: 42.30, desc: "Ismoildan transfer" },
+        { t: "out", name: "Telegram Premium", date: "Kecha, 18:30", amt: 2.50, desc: "1 oylik obuna" },
+        { t: "out", name: "Stars sotib olindi", date: "Kecha, 14:00", amt: 3.10, desc: "500 Stars" },
+        { t: "tr", name: "Ahmadga yuborildi", date: "Kecha, 11:20", amt: 10.00, desc: "Qarz" },
+        { t: "in", name: "Stake mukofoti", date: "2 kun oldin", amt: 0.65, desc: "30-kunlik APY" },
+        { t: "out", name: "NFT sotib olindi", date: "3 kun oldin", amt: 5.80, desc: "Pixel Punks #4421" },
+        { t: "in", name: "Referal bonus", date: "5 kun oldin", amt: 1.20, desc: "Yangi foydalanuvchi" },
+        { t: "out", name: "Yechib olindi", date: "6 kun oldin", amt: 8.00, desc: "Chiqarish" },
+      ]
+    };
+
+    const fTON = n => n.toFixed(2);
+    const TICLS = { in: 'g', out: 'r', tr: 'b' };
+    const ICONS = {
+      in: `<svg viewBox="0 0 24 24"><polyline points="17 11 12 6 7 11"/><line x1="12" y1="18" x2="12" y2="6"/></svg>`,
+      out: `<svg viewBox="0 0 24 24"><polyline points="7 13 12 18 17 13"/><line x1="12" y1="6" x2="12" y2="18"/></svg>`,
+      tr: `<svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>`,
+    };
+
+    function renderHistory(filter = 'all') {
+      const filtered = filter === 'all' ? S.txns : S.txns.filter(t => t.t === filter);
+
+      // Group by date
+      const byDate = {};
+      filtered.forEach(tx => {
+        const d = tx.date.split(', ')[0];
+        if (!byDate[d]) byDate[d] = [];
+        byDate[d].push(tx);
+      });
+
+      let html = '';
+      for (const [date, txns] of Object.entries(byDate)) {
+        html += `<div><div class="hd-lbl">${date}</div>`;
+        txns.forEach(tx => {
+          html += `
+        <div class="txn" onclick="toast('${tx.name} · ${tx.amt} TON')">
+          <div class="ti ${TICLS[tx.t]}">${ICONS[tx.t]}</div>
+          <div class="txn-info">
+            <div class="txn-nm">${tx.name}</div>
+            <div class="txn-dt">${tx.desc}</div>
+          </div>
+          <div>
+            <div class="txn-amt ${tx.t === 'in' ? 'pos' : tx.t === 'out' ? 'neg' : 'neu'}">${tx.t === 'in' ? '+' : '−'}${fTON(tx.amt)} TON</div>
+            <div class="txn-sub">≈$${(tx.amt * S.tonRate).toFixed(2)}</div>
+          </div>
+        </div>
+      `;
+        });
+        html += '</div>';
+      }
+
+      document.getElementById('txn-container').innerHTML = html || '<div style="text-align:center; padding:40px; color:var(--text3)">Hech qanday tranzaksiya topilmadi</div>';
+
+      // Update active filter
+      document.querySelectorAll('.hfil').forEach(el => el.classList.remove('on'));
+      document.querySelector(`.hfil[data-filter="${filter}"]`).classList.add('on');
+    }
+
+    // Filter click handlers
+    document.querySelectorAll('.hfil').forEach(el => {
+      el.addEventListener('click', function () {
+        renderHistory(this.dataset.filter);
+      });
+    });
+
+    // Initial render
+    renderHistory('all');
+
+    let _tt;
+    function toast(msg) {
+      clearTimeout(_tt);
+      const el = document.getElementById('toastEl');
+      el.textContent = msg;
+      el.classList.add('show');
+      _tt = setTimeout(() => el.classList.remove('show'), 2800);
+    }
+  </script>
+</body>
+
+</html>

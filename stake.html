@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Soft Wallet | Stake</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Cormorant+Garamond:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent
+    }
+
+    :root {
+      --bg: #080b12;
+      --bg2: #0d1017;
+      --bg3: #131720;
+      --card: #0f1318;
+      --card2: #161b24;
+      --card3: #1c2230;
+      --border: rgba(255, 255, 255, 0.055);
+      --border2: rgba(255, 255, 255, 0.1);
+      --text: #e4e7f2;
+      --text2: #6e7487;
+      --text3: #3d4257;
+      --ton: #0098EA;
+      --ton2: #2db8ff;
+      --ton-dim: rgba(0, 152, 234, 0.13);
+      --ton-glow: rgba(0, 152, 234, 0.28);
+      --green: #18b872;
+      --green-dim: rgba(24, 184, 114, 0.12);
+      --rose: #e8445a;
+      --rose-dim: rgba(232, 68, 90, 0.12);
+      --amber: #e89c28;
+      --amber-dim: rgba(232, 156, 40, 0.12);
+      --violet: #7060e0;
+      --sw: 220px;
+    }
+
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text)
+    }
+
+    .app {
+      display: flex;
+      width: 100vw;
+      height: 100dvh;
+      overflow: hidden
+    }
+
+    /* ══ SIDEBAR ══ */
+    .sidebar {
+      width: var(--sw);
+      flex-shrink: 0;
+      height: 100%;
+      background: var(--bg2);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden
+    }
+
+    .sl-logo {
+      padding: clamp(16px, 2.5vh, 26px) 18px clamp(14px, 2vh, 22px);
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0
+    }
+
+    .sl-logo-txt {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(16px, 1.3vw, 19px);
+      font-weight: 600;
+      background: linear-gradient(130deg, #fff 20%, #2db8ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text
+    }
+
+    .sl-nav {
+      flex: 1;
+      padding: clamp(8px, 1.2vh, 14px) 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      overflow-y: auto
+    }
+
+    .sl-nav::-webkit-scrollbar {
+      display: none
+    }
+
+    .si {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: clamp(9px, 1.1vh, 12px) 13px;
+      border-radius: 12px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      width: 100%;
+      text-align: left;
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(13px, 1vw, 14px);
+      font-weight: 500;
+      color: var(--text3);
+      text-decoration: none;
+      transition: background .15s, color .15s
+    }
+
+    .si:hover {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text2)
+    }
+
+    .si.active {
+      background: var(--ton-dim);
+      color: var(--ton2)
+    }
+
+    .si svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0
+    }
+
+    .sl-foot {
+      padding: clamp(10px, 1.5vh, 16px) 10px clamp(12px, 2vh, 22px);
+      border-top: 1px solid var(--border);
+      flex-shrink: 0
+    }
+
+    .sl-ver {
+      font-size: 11px;
+      color: var(--text3);
+      text-align: center;
+      padding-top: 8px
+    }
+
+    /* ══ MAIN ══ */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-width: 0
+    }
+
+    /* ══ TOPBAR ══ */
+    .topbar {
+      height: clamp(48px, 6.5vh, 60px);
+      padding: 0 clamp(16px, 2.5vw, 32px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      background: var(--bg)
+    }
+
+    .tb-title {
+      font-size: clamp(14px, 1.2vw, 17px);
+      font-weight: 700;
+      color: var(--text)
+    }
+
+    .tb-right {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .tb-bal {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--ton-dim);
+      border: 1px solid rgba(0, 152, 234, 0.2);
+      padding: clamp(5px, 0.7vh, 7px) clamp(12px, 1.3vw, 16px);
+      border-radius: 20px
+    }
+
+    .tb-bal-lbl {
+      font-size: clamp(10px, 0.8vw, 11px);
+      color: var(--text3)
+    }
+
+    .tb-bal-amt {
+      font-size: clamp(12px, 1vw, 14px);
+      font-weight: 700;
+      color: var(--ton2)
+    }
+
+    .ibell {
+      width: clamp(32px, 3.5vw, 38px);
+      height: clamp(32px, 3.5vw, 38px);
+      border-radius: 11px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      transition: background .15s;
+      flex-shrink: 0
+    }
+
+    .ibell:hover {
+      background: var(--card2)
+    }
+
+    .ibell svg {
+      width: 16px;
+      height: 16px;
+      stroke: var(--text2);
+      fill: none;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round
+    }
+
+    .ndot {
+      position: absolute;
+      top: 7px;
+      right: 7px;
+      width: 6px;
+      height: 6px;
+      background: var(--ton);
+      border-radius: 50%;
+      border: 1.5px solid var(--bg)
+    }
+
+    /* ══ CONTENT ══ */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: clamp(14px, 2.2vh, 26px) clamp(14px, 2.2vw, 32px) clamp(80px, 10vh, 100px);
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent
+    }
+
+    .content::-webkit-scrollbar {
+      width: 4px
+    }
+
+    .content::-webkit-scrollbar-thumb {
+      background: var(--border2);
+      border-radius: 4px
+    }
+
+    .mob-hdr {
+      padding: clamp(10px, 1.5vh, 14px) 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      margin-bottom: clamp(16px, 2.5vh, 24px)
+    }
+
+    .ph {
+      padding: clamp(10px, 1.5vh, 16px) 0 clamp(6px, 1vh, 10px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0
+    }
+
+    .ph-ttl {
+      font-size: clamp(15px, 1.4vw, 19px);
+      font-weight: 700;
+      color: var(--text)
+    }
+
+    .ph-btn {
+      width: clamp(32px, 3.5vw, 38px);
+      height: clamp(32px, 3.5vw, 38px);
+      border-radius: 11px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background .15s
+    }
+
+    .ph-btn:hover {
+      background: var(--card2)
+    }
+
+    .ph-btn svg {
+      width: 16px;
+      height: 16px;
+      stroke: var(--text2);
+      fill: none;
+      stroke-width: 1.7;
+      stroke-linecap: round;
+      stroke-linejoin: round
+    }
+
+    /* ══ BOTTOM NAV ══ */
+    .bnav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: clamp(58px, 8vh, 68px);
+      background: rgba(8, 11, 18, .95);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 0 4px env(safe-area-inset-bottom, 0px);
+      z-index: 200
+    }
+
+    .ntab {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 4px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      text-decoration: none;
+      color: inherit;
+      position: relative;
+      transition: opacity .15s
+    }
+
+    .ntab:active {
+      opacity: .5
+    }
+
+    .ntab svg {
+      width: clamp(19px, 2.8vw, 22px);
+      height: clamp(19px, 2.8vw, 22px);
+      stroke: var(--text3);
+      fill: none;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: stroke .18s
+    }
+
+    .ntab.active svg {
+      stroke: var(--ton)
+    }
+
+    .nt-lbl {
+      font-size: clamp(9px, 1.5vw, 11px);
+      font-weight: 600;
+      color: var(--text3);
+      transition: color .18s;
+      font-family: 'DM Sans', sans-serif
+    }
+
+    .ntab.active .nt-lbl {
+      color: var(--ton)
+    }
+
+    .ntab.active::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      width: 18px;
+      height: 2px;
+      background: var(--ton);
+      border-radius: 2px
+    }
+
+    /* ══ RESPONSIVE ══ */
+    @media(max-width:767px) {
+
+      .sidebar,
+      .topbar {
+        display: none
+      }
+
+      .bnav {
+        display: flex
+      }
+
+      .content {
+        padding-bottom: calc(clamp(58px, 8vh, 68px) + 16px + env(safe-area-inset-bottom, 0px))
+      }
+    }
+
+    @media(min-width:768px) {
+      .sidebar {
+        display: flex
+      }
+
+      .topbar {
+        display: flex
+      }
+
+      .bnav {
+        display: none
+      }
+
+      .mob-hdr {
+        display: none
+      }
+    }
+
+    @media(min-width:1440px) {
+      :root {
+        --sw: 250px
+      }
+    }
+
+    /* ══ STAKE PAGE STYLES ══ */
+    .stake-hero {
+      border-radius: clamp(14px, 1.8vw, 22px);
+      padding: clamp(16px, 2.5vh, 26px) clamp(16px, 2vw, 22px);
+      border: 1px solid rgba(24, 184, 114, 0.18);
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(140deg, #041710 0%, #062110 55%, #03140a 100%);
+      margin-bottom: clamp(12px, 1.8vh, 20px)
+    }
+
+    .stake-hero::before {
+      content: '';
+      position: absolute;
+      top: -50px;
+      right: -40px;
+      width: clamp(130px, 16vw, 190px);
+      height: clamp(130px, 16vw, 190px);
+      background: radial-gradient(circle, rgba(24, 184, 114, 0.15) 0%, transparent 60%)
+    }
+
+    .sk-lbl {
+      font-size: clamp(9px, 0.78vw, 11px);
+      font-weight: 600;
+      color: rgba(255, 255, 255, .32);
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+      margin-bottom: 5px
+    }
+
+    .sk-amt {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(28px, 4vw, 46px);
+      font-weight: 500;
+      letter-spacing: -1.5px;
+      color: #fff;
+      margin-bottom: 2px
+    }
+
+    .sk-sub {
+      font-size: clamp(11px, 0.9vw, 13px);
+      color: rgba(255, 255, 255, .3);
+      margin-bottom: clamp(10px, 1.6vh, 16px)
+    }
+
+    .sk-track {
+      height: 5px;
+      background: rgba(255, 255, 255, .09);
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: 7px
+    }
+
+    .sk-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), #4de8b0);
+      border-radius: 5px;
+      transition: width 1.4s cubic-bezier(.4, 0, .2, 1)
+    }
+
+    .sk-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: clamp(10px, 0.82vw, 12px);
+      color: rgba(255, 255, 255, .28)
+    }
+
+    .sk-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(24, 184, 114, 0.12);
+      border: 1px solid rgba(24, 184, 114, 0.18);
+      color: rgba(255, 255, 255, .6);
+      font-size: clamp(10px, 0.82vw, 11px);
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 20px;
+      margin-top: 12px
+    }
+
+    .hst {
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid rgba(255, 255, 255, .05);
+      border-radius: clamp(9px, 1vw, 13px);
+      padding: clamp(9px, 1.2vh, 13px) clamp(10px, 1.2vw, 15px)
+    }
+
+    .hst-l {
+      font-size: clamp(9px, 0.78vw, 11px);
+      color: rgba(255, 255, 255, .26);
+      margin-bottom: 3px
+    }
+
+    .hst-v {
+      font-size: clamp(12px, 1vw, 14px);
+      font-weight: 700
+    }
+
+    .hst-v.g {
+      color: var(--green)
+    }
+
+    .am-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: clamp(13px, 1.4vw, 17px);
+      padding: clamp(12px, 1.6vh, 16px) clamp(12px, 1.4vw, 17px);
+      display: flex;
+      align-items: center;
+      gap: clamp(10px, 1.2vw, 14px);
+      margin-bottom: clamp(7px, 1vh, 10px);
+      cursor: pointer;
+      transition: border-color .18s, background .18s
+    }
+
+    .am-card:hover {
+      border-color: var(--green);
+      background: var(--card2)
+    }
+
+    .am-ico {
+      width: clamp(36px, 4.2vw, 46px);
+      height: clamp(36px, 4.2vw, 46px);
+      border-radius: clamp(11px, 1.2vw, 14px);
+      background: var(--bg3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0
+    }
+
+    .am-ico svg {
+      width: clamp(16px, 1.7vw, 20px);
+      height: clamp(16px, 1.7vw, 20px);
+      stroke: var(--green);
+      fill: none;
+      stroke-width: 1.5
+    }
+
+    .am-inf {
+      flex: 1;
+      min-width: 0
+    }
+
+    .am-nm {
+      font-size: clamp(12px, 1vw, 14px);
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 3px
+    }
+
+    .am-bar {
+      height: 3px;
+      background: var(--bg3);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 4px
+    }
+
+    .am-bar-f {
+      height: 100%;
+      background: var(--green);
+      border-radius: 3px
+    }
+
+    .am-mt {
+      font-size: clamp(10px, 0.82vw, 12px);
+      color: var(--text3)
+    }
+
+    .am-pct {
+      font-size: clamp(13px, 1.3vw, 16px);
+      font-weight: 700;
+      color: var(--green);
+      flex-shrink: 0
+    }
+
+    .sh {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: clamp(14px, 2.2vh, 26px) 0 clamp(9px, 1.3vh, 14px)
+    }
+
+    .st {
+      font-size: clamp(13px, 1.1vw, 15px);
+      font-weight: 700;
+      color: var(--text)
+    }
+
+    .sl-l {
+      font-size: clamp(11px, 0.9vw, 13px);
+      color: var(--green);
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity .15s;
+      text-decoration: none
+    }
+
+    .sl-l:hover {
+      opacity: .7
+    }
+
+    .sk-cta {
+      width: 100%;
+      padding: clamp(12px, 1.7vh, 16px);
+      background: linear-gradient(135deg, #0a7a50, var(--green));
+      border: none;
+      border-radius: clamp(12px, 1.4vw, 16px);
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(13px, 1.1vw, 15px);
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      margin-top: clamp(16px, 2.5vh, 24px);
+      transition: opacity .15s, transform .15s
+    }
+
+    .sk-cta:hover {
+      opacity: .88
+    }
+
+    .sk-cta:active {
+      transform: scale(.98)
+    }
+
+    /* ══ OVERLAY / SHEET ══ */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .58);
+      backdrop-filter: blur(10px);
+      z-index: 500;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .24s
+    }
+
+    .overlay.open {
+      opacity: 1;
+      pointer-events: all
+    }
+
+    .sheet {
+      background: var(--card);
+      width: 100%;
+      max-width: 540px;
+      border-radius: clamp(18px, 2.5vw, 26px) clamp(18px, 2.5vw, 26px) 0 0;
+      padding: clamp(12px, 1.8vh, 18px) clamp(18px, 2.5vw, 28px) clamp(32px, 5.5vh, 52px);
+      transform: translateY(100%);
+      transition: transform .34s cubic-bezier(.32, .72, 0, 1);
+      max-height: 92dvh;
+      overflow-y: auto
+    }
+
+    .sheet::-webkit-scrollbar {
+      display: none
+    }
+
+    .overlay.open .sheet {
+      transform: translateY(0)
+    }
+
+    .s-handle {
+      width: 36px;
+      height: 3px;
+      background: var(--border2);
+      border-radius: 3px;
+      margin: 0 auto clamp(16px, 2.4vh, 24px);
+      opacity: .38
+    }
+
+    .s-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(22px, 2.5vw, 28px);
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 3px
+    }
+
+    .s-sub {
+      font-size: clamp(11px, 0.9vw, 13px);
+      color: var(--text3);
+      margin-bottom: clamp(16px, 2.4vh, 24px)
+    }
+
+    .s-amt-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      border-bottom: 1px solid var(--border2);
+      padding-bottom: clamp(10px, 1.5vh, 16px);
+      margin-bottom: clamp(14px, 2vh, 22px)
+    }
+
+    .s-sym {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
+      color: var(--green)
+    }
+
+    .s-amt-inp {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(34px, 4.5vw, 46px);
+      letter-spacing: -2px;
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--text);
+      width: 100%;
+      line-height: 1
+    }
+
+    .s-amt-inp::placeholder {
+      color: var(--bg3)
+    }
+
+    .s-lbl {
+      font-size: clamp(9px, 0.78vw, 11px);
+      font-weight: 600;
+      color: var(--text3);
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      margin-bottom: 7px;
+      display: block
+    }
+
+    .s-inp {
+      width: 100%;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: clamp(11px, 1.2vw, 14px);
+      padding: clamp(11px, 1.5vh, 14px) 15px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(13px, 1.1vw, 14px);
+      color: var(--text);
+      outline: none;
+      transition: border-color .2s;
+      margin-bottom: clamp(10px, 1.4vh, 14px)
+    }
+
+    .s-inp:focus {
+      border-color: var(--green)
+    }
+
+    .s-cta {
+      width: 100%;
+      padding: clamp(13px, 1.8vh, 17px);
+      margin-top: clamp(8px, 1.2vh, 12px);
+      background: linear-gradient(135deg, #0a7a50, var(--green));
+      border: none;
+      border-radius: clamp(13px, 1.4vw, 17px);
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(13px, 1.1vw, 15px);
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      transition: opacity .15s, transform .15s;
+      box-shadow: 0 4px 20px rgba(24, 184, 114, .26)
+    }
+
+    .s-cta:hover {
+      opacity: .88
+    }
+
+    .s-cta:active {
+      transform: scale(.98)
+    }
+
+    .s-info {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: clamp(11px, 1.2vw, 14px);
+      padding: clamp(11px, 1.5vh, 14px) 15px;
+      margin-bottom: clamp(12px, 1.8vh, 18px);
+      font-size: clamp(12px, 0.95vw, 13px);
+      color: var(--text2);
+      line-height: 1.65
+    }
+
+    .ct-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: clamp(7px, 0.9vw, 10px);
+      margin-bottom: clamp(12px, 1.8vh, 18px)
+    }
+
+    .ct-opt {
+      background: var(--bg2);
+      border: 2px solid var(--border);
+      border-radius: clamp(10px, 1.1vw, 13px);
+      padding: clamp(10px, 1.4vh, 13px);
+      cursor: pointer;
+      transition: border-color .18s, background .18s;
+      text-align: center
+    }
+
+    .ct-opt.sel {
+      border-color: var(--green);
+      background: var(--green-dim)
+    }
+
+    .ct-opt-nm {
+      font-size: clamp(11px, 1vw, 13px);
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 2px
+    }
+
+    .ct-opt-sb {
+      font-size: clamp(9px, 0.78vw, 10px);
+      color: var(--text3)
+    }
+
+    .toast {
+      position: fixed;
+      top: clamp(14px, 2.5vh, 22px);
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: var(--card2);
+      border: 1px solid var(--border2);
+      color: var(--text);
+      font-size: clamp(12px, 1vw, 13px);
+      font-weight: 500;
+      padding: clamp(9px, 1.2vh, 12px) clamp(16px, 2vw, 22px);
+      border-radius: 100px;
+      z-index: 9999;
+      white-space: nowrap;
+      transition: transform .3s cubic-bezier(.32, .72, 0, 1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, .5)
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0)
+    }
+
+    @keyframes rise {
+      from {
+        opacity: 0;
+        transform: translateY(12px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .r1 {
+      animation: rise .34s .00s ease both
+    }
+
+    .r2 {
+      animation: rise .34s .06s ease both
+    }
+
+    .r3 {
+      animation: rise .34s .12s ease both
+    }
+
+    .r4 {
+      animation: rise .34s .18s ease both
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sl-logo">
+        <svg width="30" height="22" viewBox="0 0 42 30" fill="none">
+          <path d="M21 2L38 10.5V19.5L21 28L4 19.5V10.5L21 2Z" stroke="#0098EA" stroke-width="1.5"
+            stroke-linejoin="round" />
+          <path d="M21 7L30 13.5L21 23L12 13.5L21 7Z" fill="rgba(0,152,234,0.18)" stroke="#2db8ff" stroke-width="1.2"
+            stroke-linejoin="round" />
+          <circle cx="21" cy="15" r="2.2" fill="#0098EA" />
+          <circle cx="21" cy="15" r="1" fill="rgba(255,255,255,0.6)" />
+        </svg>
+        <span class="sl-logo-txt">Soft Wallet</span>
+      </div>
+      <nav class="sl-nav">
+        <a href="index.html" class="si"><svg viewBox="0 0 24 24">
+            <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z" />
+            <polyline points="9 21 9 12 15 12 15 21" />
+          </svg>Asosiy</a>
+        <a href="kartalar.html" class="si"><svg viewBox="0 0 24 24">
+            <rect x="2" y="5" width="20" height="14" rx="2" />
+            <line x1="2" y1="10" x2="22" y2="10" />
+            <line x1="6" y1="15" x2="10" y2="15" />
+          </svg>Kartam</a>
+        <a href="xizmatlar.html" class="si"><svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14" />
+          </svg>Xizmatlar</a>
+        <a href="stake.html" class="si active"><svg viewBox="0 0 24 24">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+          </svg>Stake</a>
+        <a href="tarix.html" class="si"><svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>Tarix</a>
+      </nav>
+      <div class="sl-foot">
+        <a href="#" class="si" onclick="toast('⚙️ Tez orada');return false"><svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>Sozlamalar</a>
+        <div class="sl-ver">v1.0 · TON Network</div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main">
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <div class="tb-title">Stake / Omonat</div>
+        <div class="tb-right">
+          <div class="tb-bal"><span class="tb-bal-lbl">Balans</span><span class="tb-bal-amt" id="tb-bal">248.50
+              TON</span></div>
+          <div class="ibell" onclick="toast('🔔 Bildirishnomalar')">
+            <svg viewBox="0 0 24 24">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+            <div class="ndot"></div>
+          </div>
+        </div>
+      </header>
+
+      <!-- CONTENT -->
+      <div class="content">
+        <!-- Mobile header -->
+        <div class="mob-hdr">
+          <svg width="36" height="26" viewBox="0 0 42 30" fill="none">
+            <path d="M21 2L38 10.5V19.5L21 28L4 19.5V10.5L21 2Z" stroke="#0098EA" stroke-width="1.5"
+              stroke-linejoin="round" />
+            <path d="M21 7L30 13.5L21 23L12 13.5L21 7Z" fill="rgba(0,152,234,0.18)" stroke="#2db8ff" stroke-width="1.2"
+              stroke-linejoin="round" />
+            <circle cx="21" cy="15" r="2.2" fill="#0098EA" />
+            <circle cx="21" cy="15" r="1" fill="rgba(255,255,255,0.55)" />
+          </svg>
+          <div class="ibell" onclick="toast('🔔 Bildirishnomalar')">
+            <svg viewBox="0 0 24 24">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+            <div class="ndot"></div>
+          </div>
+        </div>
+
+        <!-- Header with add button -->
+        <div class="ph">
+          <div class="ph-ttl">Stake / Omonat</div>
+          <div class="ph-btn" onclick="openSheet('addamonat')"><svg viewBox="0 0 24 24">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg></div>
+        </div>
+
+        <!-- Stake hero section -->
+        <div class="stake-hero r1">
+          <div class="sk-lbl">Stake qilingan</div>
+          <div class="sk-amt" id="staked-amt">80.00 <span
+              style="font-size:clamp(14px,1.4vw,18px);opacity:.38">TON</span></div>
+          <div class="sk-sub" id="staked-goal">Maqsad: 200.00 TON</div>
+          <div class="sk-track">
+            <div class="sk-fill" id="skFill" style="width:40%"></div>
+          </div>
+          <div class="sk-meta"><span id="staked-pct">40% bajarildi</span><span id="staked-left">120.00 TON qoldi</span>
+          </div>
+          <div class="sk-badge">✦ Yillik APY: 20% gacha</div>
+        </div>
+
+        <!-- Stats -->
+        <div
+          style="display:grid;grid-template-columns:1fr 1fr;gap:clamp(8px,1.2vw,14px);margin-bottom:clamp(14px,2.5vh,24px)"
+          class="r2">
+          <div class="hst">
+            <div class="hst-l">Jami mukofot</div>
+            <div class="hst-v g" id="total-reward">+3.05 TON</div>
+          </div>
+          <div class="hst">
+            <div class="hst-l">Faol omonatlar</div>
+            <div class="hst-v" style="color:var(--ton2)" id="active-count">2 ta</div>
+          </div>
+        </div>
+
+        <!-- My deposits -->
+        <div class="sh r3">
+          <div class="st">Omonatlarim</div><a href="#" class="sl-l" onclick="openSheet('addamonat');return false">+
+            Qo'shish</a>
+        </div>
+        <div id="deposits-container" class="r3">
+          <!-- Deposit cards will be inserted via JavaScript -->
+        </div>
+
+        <!-- Main CTA -->
+        <button class="sk-cta r4" onclick="openSheet('stake')">Stake qilish</button>
+      </div>
+
+      <!-- BOTTOM NAV -->
+      <nav class="bnav">
+        <a href="index.html" class="ntab"><svg viewBox="0 0 24 24">
+            <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z" />
+            <polyline points="9 21 9 12 15 12 15 21" />
+          </svg><span class="nt-lbl">Asosiy</span></a>
+        <a href="kartalar.html" class="ntab"><svg viewBox="0 0 24 24">
+            <rect x="2" y="5" width="20" height="14" rx="2" />
+            <line x1="2" y1="10" x2="22" y2="10" />
+            <line x1="6" y1="15" x2="10" y2="15" />
+          </svg><span class="nt-lbl">Kartam</span></a>
+        <a href="stake.html" class="ntab active"><svg viewBox="0 0 24 24">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+          </svg><span class="nt-lbl">Stake</span></a>
+        <a href="tarix.html" class="ntab"><svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg><span class="nt-lbl">Tarix</span></a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- OVERLAY / SHEET -->
+  <div class="overlay" id="overlay" onclick="closeOv(event)">
+    <div class="sheet" id="sheetBody"></div>
+  </div>
+  <div class="toast" id="toastEl"></div>
+
+  <script>
+    // Stake data
+    const S = {
+      balance: 248.50,
+      staked: 80.00,
+      stakeGoal: 200.00,
+      tonRate: 6.00,
+      amonats: [
+        { name: "30 kunlik", apy: 8, staked: 30.00, earned: 0.65 },
+        { name: "90 kunlik", apy: 14, staked: 50.00, earned: 2.40 }
+      ],
+      txns: []
+    };
+
+    const fTON = n => parseFloat(n).toFixed(2);
+
+    // Update UI
+    function updateStakeUI() {
+      const pct = Math.min(100, Math.round(S.staked / S.stakeGoal * 100));
+      const left = Math.max(0, S.stakeGoal - S.staked);
+      const totalReward = S.amonats.reduce((a, x) => a + x.earned, 0);
+
+      document.getElementById('staked-amt').innerHTML = `${fTON(S.staked)} <span style="font-size:clamp(14px,1.4vw,18px);opacity:.38">TON</span>`;
+      document.getElementById('staked-goal').textContent = `Maqsad: ${fTON(S.stakeGoal)} TON`;
+      document.getElementById('staked-pct').textContent = `${pct}% bajarildi`;
+      document.getElementById('staked-left').textContent = `${fTON(left)} TON qoldi`;
+      document.getElementById('total-reward').textContent = `+${fTON(totalReward)} TON`;
+      document.getElementById('active-count').textContent = `${S.amonats.length} ta`;
+      document.getElementById('tb-bal').textContent = fTON(S.balance) + ' TON';
+
+      const fill = document.getElementById('skFill');
+      if (fill) fill.style.width = pct + '%';
+
+      // Render deposits
+      const container = document.getElementById('deposits-container');
+      container.innerHTML = S.amonats.map(a => {
+        const pct = Math.round(a.staked / S.stakeGoal * 100);
+        return `
+      <div class="am-card" onclick="toast('${a.name} · APY ${a.apy}%')">
+        <div class="am-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg></div>
+        <div class="am-inf">
+          <div class="am-nm">${a.name} · APY ${a.apy}%</div>
+          <div class="am-bar"><div class="am-bar-f" style="width:${pct}%"></div></div>
+          <div class="am-mt">${fTON(a.staked)} TON · +${fTON(a.earned)} TON mukofot</div>
+        </div>
+        <div class="am-pct">${a.apy}%</div>
+      </div>
+    `;
+      }).join('');
+    }
+
+    // Sheet handling
+    let selPer = '30';
+    const apys = { 30: 8, 90: 14, 180: 20 };
+
+    const SHEETS = {
+      stake: {
+        t: "Stake qilish",
+        s: "TON qulflang, mukofot oling",
+        b: `<div class="s-info">💡 Stake APY ga qarab har kunda hisoblanadi.</div>
+        <div class="s-amt-row"><span class="s-sym">◈</span><input class="s-amt-inp" id="mAmt" type="number" placeholder="0.00" step="0.01" inputmode="decimal"></div>
+        <label class="s-lbl">Muddat</label>
+        <div class="ct-grid">
+          <div class="ct-opt sel" onclick="selP(this,'30')"><div class="ct-opt-nm">30 kun</div><div class="ct-opt-sb">APY 8%</div></div>
+          <div class="ct-opt" onclick="selP(this,'90')"><div class="ct-opt-nm">90 kun</div><div class="ct-opt-sb">APY 14%</div></div>
+          <div class="ct-opt" onclick="selP(this,'180')"><div class="ct-opt-nm">180 kun</div><div class="ct-opt-sb">APY 20%</div></div>
+        </div>
+        <button class="s-cta" onclick="doStake()">Stake qilish →</button>`
+      },
+      addamonat: {
+        t: "Yangi omonat",
+        s: "Qo'shimcha omonat",
+        b: `<div class="s-amt-row"><span class="s-sym">◈</span><input class="s-amt-inp" id="mAmt" type="number" placeholder="0.00" step="0.01" inputmode="decimal"></div>
+        <label class="s-lbl">Muddat</label>
+        <div class="ct-grid">
+          <div class="ct-opt sel" onclick="selP(this,'30')"><div class="ct-opt-nm">30 kun</div><div class="ct-opt-sb">APY 8%</div></div>
+          <div class="ct-opt" onclick="selP(this,'90')"><div class="ct-opt-nm">90 kun</div><div class="ct-opt-sb">APY 14%</div></div>
+          <div class="ct-opt" onclick="selP(this,'180')"><div class="ct-opt-nm">180 kun</div><div class="ct-opt-sb">APY 20%</div></div>
+        </div>
+        <button class="s-cta" onclick="doAddAmonat()">Omonat ochish →</button>`
+      }
+    };
+
+    function selP(el, v) {
+      document.querySelectorAll('.ct-opt').forEach(o => o.classList.remove('sel'));
+      el.classList.add('sel');
+      selPer = v;
+    }
+
+    function openSheet(id) {
+      const d = SHEETS[id];
+      if (!d) return;
+      selPer = '30';
+      document.getElementById('sheetBody').innerHTML = `<div class="s-handle"></div><div class="s-title">${d.t}</div><div class="s-sub">${d.s}</div>${d.b}`;
+      document.getElementById('overlay').classList.add('open');
+      setTimeout(() => {
+        const i = document.getElementById('mAmt');
+        if (i) i.focus();
+      }, 360);
+    }
+
+    function closeOv(e) {
+      if (e.target === document.getElementById('overlay')) {
+        document.getElementById('overlay').classList.remove('open');
+      }
+    }
+
+    function closeSheet() {
+      document.getElementById('overlay').classList.remove('open');
+    }
+
+    function doStake() {
+      const v = parseFloat(document.getElementById('mAmt')?.value || 0);
+      if (!v || v < 0.1) {
+        toast('❌ Kamida 0.1 TON');
+        return;
+      }
+      if (v > S.balance) {
+        toast('❌ Balans yetarli emas');
+        return;
+      }
+
+      S.balance -= v;
+      S.staked += v;
+      S.amonats.push({
+        name: `${selPer} kunlik`,
+        apy: apys[selPer] || 8,
+        staked: v,
+        earned: 0
+      });
+
+      updateStakeUI();
+      closeSheet();
+      toast(`🔒 ${fTON(v)} TON stake qilindi`);
+    }
+
+    function doAddAmonat() {
+      const v = parseFloat(document.getElementById('mAmt')?.value || 0);
+      if (!v || v < 0.1) {
+        toast('❌ Kamida 0.1 TON');
+        return;
+      }
+      if (v > S.balance) {
+        toast('❌ Balans yetarli emas');
+        return;
+      }
+
+      S.balance -= v;
+      S.staked += v;
+      S.amonats.push({
+        name: `${selPer} kunlik`,
+        apy: apys[selPer] || 8,
+        staked: v,
+        earned: 0
+      });
+
+      updateStakeUI();
+      closeSheet();
+      toast(`➕ Yangi omonat qo'shildi (${fTON(v)} TON)`);
+    }
+
+    // Toast
+    let _tt;
+    function toast(msg) {
+      clearTimeout(_tt);
+      const el = document.getElementById('toastEl');
+      el.textContent = msg;
+      el.classList.add('show');
+      _tt = setTimeout(() => el.classList.remove('show'), 2800);
+    }
+
+    // ESC key to close sheet
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeSheet();
+    });
+
+    // Initialize
+    updateStakeUI();
+  </script>
+</body>
+
+</html>
